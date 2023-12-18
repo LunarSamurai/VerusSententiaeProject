@@ -29,6 +29,8 @@ namespace VerusSententiaeProject
         private SAM _sam;
         private List<string> _videoFiles;
         private int _currentVideoIndex;
+        private List<string> trialAudioFiles = new List<string>();
+        private List<string> trueTrialAudioFiles = new List<string>();
 
         public MainWindow()
         {
@@ -55,6 +57,10 @@ namespace VerusSententiaeProject
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             _iat.IAT_KeyDown(e.Key);
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Alt && e.Key == Key.Y)
+            {
+                SkipVideo();
+            }
         }
 
         private void AttachIATEventHandlers()
@@ -258,6 +264,25 @@ namespace VerusSententiaeProject
             }
         }
 
+        private void SkipVideo()
+        {
+            // Stop the current video
+            VideoPlayer.Stop();
+
+            // Increment the video index or collapse the video player grid if all videos have been played
+            _currentVideoIndex++;
+            if (_currentVideoIndex < _videoFiles.Count)
+            {
+                PlayIntroductionVideo();
+            }
+            else
+            {
+                VideoPlayerGrid.Visibility = Visibility.Collapsed;
+                MessageBox.Show("All videos have been played.");
+            }
+        }
+
+
         private void VideoPlayer_MediaEnded(object sender, RoutedEventArgs e)
         {
             _currentVideoIndex++;
@@ -272,13 +297,50 @@ namespace VerusSententiaeProject
             }
         }
 
+        private void LoadAudioFiles()
+        {
+            string baseDir = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string projectRootPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(baseDir).FullName).FullName).FullName;
+            string audioFolderPath = System.IO.Path.Combine(projectRootPath, "SAM_Resources", "Audio_Files");
 
+            if (!Directory.Exists(audioFolderPath))
+            {
+                MessageBox.Show("Audio directory not found.");
+                return;
+            }
 
+            var audioFormats = new[] { "*.mp3", "*.wav" }; // Add more formats if needed
+            var allAudioFiles = audioFormats.SelectMany(format => Directory.EnumerateFiles(audioFolderPath, format)).ToList();
+
+            foreach (var file in allAudioFiles)
+            {
+                if (System.IO.Path.GetFileName(file).Contains("trail"))
+                {
+                    trialAudioFiles.Add(file);
+                }
+                else
+                {
+                    trueTrialAudioFiles.Add(file);
+                }
+            }
+
+            // Here you can add logic to use these lists as required
+        }
 
         private void Demo_Introducer_Continue_Click(object sender, RoutedEventArgs e)
         {
             DemoIntroducer.Visibility= Visibility.Collapsed;
+            DemoTrialBeginnerGrid.Visibility = Visibility.Visible;
+            LoadAudioFiles();
         }
+
+        private void Demo_Trail_Beginner_Continue_Button_Click(object sender, RoutedEventArgs e)
+        {
+            DemoTrialBeginnerGrid.Visibility = Visibility.Collapsed;
+            
+        }
+
+
 
     }
 

@@ -82,7 +82,7 @@
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Verus Sententiae" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Exam Menu" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10"/>
-            
+
             <Grid x:Name="Exam_Menu" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -441,6 +441,9 @@
         </Grid>
         <Grid x:Name="DemoIntroducer" Visibility="Collapsed">
             <TextBlock x:Name="SamDemoTitleTextBlock" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <TextBlock x:Name="SamDemoTitleTextBlockDescription" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap">
+                <Run Text="You are about to begin the prebuilt sample trials designed to get you familiarized with the layout of this evaluation."/>
+            </TextBlock>
             <!-- Buttons -->
             <Button x:Name="DemoIntroducerContinueButton" Content="Continue" Width="150" Height="60" Click="Demo_Introducer_Continue_Click" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" Grid.Row="4" Margin="0,200,0,0">
@@ -508,6 +511,71 @@
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       LoadedBehavior="Manual" UnloadedBehavior="Stop"
                       MediaEnded="VideoPlayer_MediaEnded"/>
+        </Grid>
+        <Grid x:Name="DemoTrialBeginnerGrid" Visibility="Collapsed">
+            <TextBlock x:Name="DemoTrialTitleBeginner" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <TextBlock x:Name="DemoTrialDescriptionBeginner" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap">
+                <Run Text="Please prepare yourself, when you press continue, you will hear a sound. Please rate the sound based on the Valence, Arousal, and Signicance in the proceeding screens that follow. Please press continue when you are ready."/>
+            </TextBlock>
+            <!-- Buttons -->
+            <Button x:Name="DemoTrailBeginnerContinueButton" Content="Continue" Width="150" Height="60" Click="Demo_Trail_Beginner_Continue_Button_Click" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" Grid.Row="4" Margin="0,200,0,0">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <!-- Rounded corners -->
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="BorderElement" Background="{TemplateBinding Background}" BorderBrush="Gray" BorderThickness="1" CornerRadius="10" Effect="{TemplateBinding Effect}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <!-- Gradient background when not mouse over -->
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#FFD3D3D3" Offset="0.0"/>
+                                    <GradientStop Color="#FFA1A1A1" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Setter.Value>
+                        </Setter>
+                        <!-- Animation for property changes -->
+                        <Setter Property="RenderTransform">
+                            <Setter.Value>
+                                <ScaleTransform x:Name="Transform" ScaleX="1" ScaleY="1"/>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <!-- Gradient background and shadow effect when mouse is over -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#FFA1A1A1" Offset="0.0"/>
+                                            <GradientStop Color="#FFD3D3D3" Offset="1.0"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="Black" Direction="320" ShadowDepth="5" BlurRadius="15" Opacity="0.3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <!-- Scale down button when pressed -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </Grid>
 </Window>
