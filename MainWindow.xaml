@@ -518,7 +518,7 @@
                 <Run Text="Please prepare yourself, when you press continue, you will hear a sound. Please rate the sound based on the Valence, Arousal, and Signicance in the proceeding screens that follow. Please press continue when you are ready."/>
             </TextBlock>
             <!-- Buttons -->
-            <Button x:Name="DemoTrailBeginnerContinueButton" Content="Continue" Width="150" Height="60" Click="Demo_Trail_Beginner_Continue_Button_Click" 
+            <Button x:Name="DemoTrailBeginnerContinueButton" Content="Continue" Width="150" Height="60" Click="Demo_Trial_Beginner_Continue_Button_Click" 
                 HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" Grid.Row="4" Margin="0,200,0,0">
                 <Button.Style>
                     <Style TargetType="Button">
@@ -576,6 +576,38 @@
                     </Style>
                 </Button.Style>
             </Button>
+        </Grid>
+        <Grid x:Name="SoundDisplayedGrid" Visibility="Collapsed">
+            <TextBlock x:Name="SoundDisplayGrid" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap">
+                <Run Text="Please Pay Attention"/>
+            </TextBlock>
+        </Grid>
+        <Grid x:Name="ValenceRatingGrid" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Please Rate based on Valence" 
+               FontSize="34"
+               FontWeight="Bold"
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Top"
+               Grid.Row="0"/>
+            
+            <TextBlock Text="Please type your response using your keyboard."
+               FontSize="18" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Top"
+               Grid.Row="1"/>  
+
+            <!-- Image control to display your picture -->
+            <Image x:Name="ValenceImage" 
+                Source="\SAM_Resources\ValenceImage\CorrectedValence.png"  
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+                Grid.Row="2"/>
+            <!-- Add your rating controls below the image -->
         </Grid>
     </Grid>
 </Window>

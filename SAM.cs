@@ -140,6 +140,8 @@ namespace VerusSententiaeProject
                     Audio_File_Order.Add(line.Trim());
                 }
             }
+
         }
+
     }
 }
