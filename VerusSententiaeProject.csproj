@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="IAT_Resources\Logo\logo.gif" />
     <None Remove="icons8-european-dragon-48.ico" />
+    <None Remove="SAM_Resources\ArousalImage\CorrectedArousal.png" />
     <None Remove="SAM_Resources\ValenceImage\CorrectedValence.png" />
   </ItemGroup>
 
@@ -20,6 +21,7 @@
   <ItemGroup>
     <Resource Include="IAT_Resources\Logo\logo.gif" />
     <Resource Include="icons8-european-dragon-48.ico" />
+    <Resource Include="SAM_Resources\ArousalImage\CorrectedArousal.png" />
     <Resource Include="SAM_Resources\ValenceImage\CorrectedValence.png" />
   </ItemGroup>
 

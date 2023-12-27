@@ -594,12 +594,12 @@
                HorizontalAlignment="Center" 
                VerticalAlignment="Top"
                Grid.Row="0"/>
-            
+
             <TextBlock Text="Please type your response using your keyboard."
                FontSize="18" 
                HorizontalAlignment="Center" 
                VerticalAlignment="Top"
-               Grid.Row="1"/>  
+               Grid.Row="1"/>
 
             <!-- Image control to display your picture -->
             <Image x:Name="ValenceImage" 
@@ -609,5 +609,33 @@
                 Grid.Row="2"/>
             <!-- Add your rating controls below the image -->
         </Grid>
+        <Grid x:Name="ArousalRatingGrid" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Please Rate based on Valence" 
+               FontSize="34"
+               FontWeight="Bold"
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Top"
+               Grid.Row="0"/>
+
+            <TextBlock Text="Please type your response using your keyboard."
+               FontSize="18" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Top"
+               Grid.Row="1"/>
+
+            <!-- Image control to display your picture -->
+            <Image x:Name="ArousalImage" 
+                Source="\SAM_Resources\ArousalImage\CorrectedArousal.png"  
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"
+                Grid.Row="2"/>
+            <!-- Add your rating controls below the image -->
+        </Grid>
     </Grid>
+    
 </Window>
