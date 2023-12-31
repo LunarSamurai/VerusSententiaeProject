@@ -168,7 +168,7 @@ namespace VerusSententiaeProject
         {
             splashTimer.Stop();
             // Hide SplashScreen and show MainMenu
-            ; SplashScreen.Visibility = Visibility.Collapsed;
+            SplashScreen.Visibility = Visibility.Collapsed;
             Exam_Menu.Visibility = Visibility.Visible;
             StartScreen.Visibility = Visibility.Visible;
 
@@ -246,11 +246,21 @@ namespace VerusSententiaeProject
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-
+            ValenceRatingGrid.Visibility = Visibility.Collapsed;
+            MessageBox.Show("Key has been pressed" + e.Key);
             if (SAM.IsValenceRecording)
             {
                 SAM.RecordValenceRating(e);
+
+                // Access the rating here
+                string rating = SAM.ValenceRating;
+                MessageBox.Show("The key press had been recorded " + rating);
             }
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
     }

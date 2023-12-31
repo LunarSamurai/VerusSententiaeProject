@@ -334,16 +334,20 @@ namespace VerusSententiaeProject
         // In SAM class
 
         public static bool IsValenceRecording { get; set; }
+        public static string ValenceRating { get; set; }
 
         public static void StartValenceRecording()
         {
             IsValenceRecording = true;
         }
 
+
+
         public static void RecordValenceRating(KeyEventArgs e)
         {
             // Check key and record rating
 
+            ValenceRating = e.Key.ToString();
             IsValenceRecording = false;
             ValenceRatingGrid.Visibility = Visibility.Collapsed;
             ArousalRatingGrid.Visibility = Visibility.Visible;
