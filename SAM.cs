@@ -169,7 +169,6 @@ namespace VerusSententiaeProject
         private void SAM_Instruction_Button_Continue_Click(object sender, RoutedEventArgs e)
         {
             SamInstructionScreen.Visibility = Visibility.Collapsed;
-            DemoIntroducer.Visibility = Visibility.Visible;
             VideoPlayerGrid.Visibility = Visibility.Visible;
             PlayIntroductionVideo();
         }
@@ -230,6 +229,7 @@ namespace VerusSententiaeProject
             else
             {
                 VideoPlayerGrid.Visibility = Visibility.Collapsed; // Collapse the video player when all videos have been played
+                DemoIntroducer.Visibility = Visibility.Visible;
                 MessageBox.Show("All videos have been played.");
             }
         }
@@ -330,30 +330,6 @@ namespace VerusSententiaeProject
                 MessageBox.Show("Error loading image: " + ex.Message);
             }
         }
-
-        // In SAM class
-
-        public static bool IsValenceRecording { get; set; }
-        public static string ValenceRating { get; set; }
-
-        public static void StartValenceRecording()
-        {
-            IsValenceRecording = true;
-        }
-
-
-
-        public static void RecordValenceRating(KeyEventArgs e)
-        {
-            // Check key and record rating
-
-            ValenceRating = e.Key.ToString();
-            IsValenceRecording = false;
-            ValenceRatingGrid.Visibility = Visibility.Collapsed;
-            ArousalRatingGrid.Visibility = Visibility.Visible;
-        }
-
-
         private void MediaPlayer_MediaEnded(object sender, EventArgs e)
 
         {
@@ -361,6 +337,8 @@ namespace VerusSententiaeProject
             ValenceRatingGrid.Visibility = Visibility.Visible;
             OnValenceRecordingStart?.Invoke();
         }
+
+
 
     }
 }

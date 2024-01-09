@@ -36,7 +36,8 @@ namespace VerusSententiaeProject
 
         public MainWindow()
         {
-
+            KeyUp += MainWindow_KeyUp;
+            Loaded += MainWindow_Loaded;
             InitializeComponent();
             _iat = new IAT();
             _sam = new SAM();
@@ -54,18 +55,36 @@ namespace VerusSententiaeProject
             splashTimer.Interval = TimeSpan.FromSeconds(10);
             splashTimer.Tick += SplashTimer_Tick;
             splashTimer.Start();
-            this.KeyDown += MainWindow_KeyDown; // 6. Attach the key down event handler
+
         }
-        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SAM.OnSkipVideoKeyPress += (e) =>
+            // Using the dispatcher to ensure this runs on the UI thread
+            Dispatcher.Invoke(() =>
             {
-                if (e.Key == Key.Y)
-                {
-                    _sam.SkipVideo();
-                }
-            };
+                // Attempt to give the main window focus
+                Focus();
+            });
         }
+
+        private void MainWindow_KeyUp(object sender, KeyEventArgs e)
+        {
+            Focus();
+            MessageBox.Show("Key pressed");
+            ValenceRatingGrid.Visibility = Visibility.Collapsed;
+            ArousalRatingGrid.Visibility = Visibility.Visible;
+            if (e.Key >= Key.D1 && e.Key <= Key.D9)
+            {
+                MessageBox.Show("A key 1 - 9 was pressed successfully.");
+                ValenceRatingGrid.Visibility = Visibility.Collapsed;
+                ArousalRatingGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MessageBox.Show(e.Key.ToString(), "Something was pressed!");
+            }
+        }
+
 
         private void AttachIATEventHandlers()
         {
@@ -201,7 +220,6 @@ namespace VerusSententiaeProject
             Exam_Menu.Visibility = Visibility.Collapsed;
             StartScreen.Visibility = Visibility.Collapsed;
             SamStartScreen.Visibility = Visibility.Visible;
-            SAM.OnValenceRecordingStart += ValenceRecorder;
         }
 
         private void SAM_Button_Continue_Click(object sender, RoutedEventArgs e)
@@ -234,29 +252,6 @@ namespace VerusSententiaeProject
             SamDemoTitleTextBlock.Text = title;
         }
 
-        private void ValenceRecorder()
-        {
-            this.Focus();
-
-            // Could show instructions here 
-
-            SAM.StartValenceRecording();
-        }
-
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            ValenceRatingGrid.Visibility = Visibility.Collapsed;
-            MessageBox.Show("Key has been pressed" + e.Key);
-            if (SAM.IsValenceRecording)
-            {
-                SAM.RecordValenceRating(e);
-
-                // Access the rating here
-                string rating = SAM.ValenceRating;
-                MessageBox.Show("The key press had been recorded " + rating);
-            }
-        }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
