@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Threading;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using System.Windows;
-using System.Windows.Input;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace VerusSententiaeProject
 {
@@ -19,21 +16,21 @@ namespace VerusSententiaeProject
     {
         public string Break_Period { get; private set; }
         public List<string> Audio_File_Order { get; private set; }
-        private List<string> _videoFiles;
-        private int _currentVideoIndex;
         private List<string> trialAudioFiles = new List<string>();
         private List<string> trueTrialAudioFiles = new List<string>();
         private string CurrentValenceAnswer = string.Empty;
-        public static Grid DemoIntroducer { get; set; }
-        public static Grid VideoPlayerGrid { get; set; }
-        public static Grid SamInstructionScreen { get; set; }
-        public static Grid DemoTrialBeginnerGrid { get; set; }
-        public static Grid SoundDisplayedGrid { get; set; }
-        public static Grid ValenceRatingGrid { get; set; }
-        public static Image ValenceImage { get; set; }
-        public static Image ArousalImage { get; set; }
-        public static Grid ArousalRatingGrid { get; set; }
-        public static MediaElement VideoPlayer { get; set; }
+        public static Grid DemoIntroducer { get; set; } = new Grid();
+        public static Grid VideoPlayerGrid { get; set; } = new Grid();
+        public static Grid SamInstructionScreen { get; set; } = new Grid();
+        public static Grid DemoTrialBeginnerGrid { get; set; } = new Grid();
+        public static Grid SoundDisplayedGrid { get; set; } = new Grid();
+        public static Grid ValenceRatingGrid { get; set; } = new Grid();
+        public static Image ValenceImage { get; set; } = new Image();
+        public static Image ArousalImage { get; set; } = new Image();
+        public static Grid ArousalRatingGrid { get; set; } = new Grid();
+        public static MediaElement VideoPlayer { get; set; } = new MediaElement();
+        public event Action PlayIntroductionVideoRequested;
+
 
         // Define states for the SAM exam
         private enum SamState
@@ -59,7 +56,6 @@ namespace VerusSententiaeProject
         {
             Audio_File_Order = new List<string>();
             _currentState = SamState.Start;
-            LoadValenceImage();
         }
 
         public void PrepareSamExam()
@@ -166,73 +162,13 @@ namespace VerusSententiaeProject
 
 
         }
-        private void SAM_Instruction_Button_Continue_Click(object sender, RoutedEventArgs e)
+        public void SAM_Instruction_Button_Continue_Click(object sender, RoutedEventArgs e)
         {
             SamInstructionScreen.Visibility = Visibility.Collapsed;
             VideoPlayerGrid.Visibility = Visibility.Visible;
-            PlayIntroductionVideo();
+            PlayIntroductionVideoRequested?.Invoke();
         }
 
-        private void PlayIntroductionVideo()
-        {
-            string baseDir = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string projectRootPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(baseDir).FullName).FullName).FullName;
-            string videoFolderPath = System.IO.Path.Combine(projectRootPath, "SAM_Resources", "IntroductionVideo");
-
-            if (!Directory.Exists(videoFolderPath))
-            {
-                MessageBox.Show("Video directory not found.");
-                return;
-            }
-
-            var videoFormats = new[] { "*.mp4", "*.mov" };
-            _videoFiles = videoFormats.SelectMany(format => Directory.EnumerateFiles(videoFolderPath, format)).ToList();
-
-            if (_videoFiles.Count > 0 && _currentVideoIndex < _videoFiles.Count)
-            {
-                string videoPath = _videoFiles[_currentVideoIndex];
-                VideoPlayer.Source = new Uri(videoPath, UriKind.Absolute);
-                VideoPlayer.Play();
-            }
-            else
-            {
-                VideoPlayerGrid.Visibility = Visibility.Collapsed; // Collapse the video player if no videos are found
-            }
-        }
-
-        public void SkipVideo()
-        {
-            // Stop the current video
-            VideoPlayer.Stop();
-
-            // Increment the video index or collapse the video player grid if all videos have been played
-            _currentVideoIndex++;
-            if (_currentVideoIndex < _videoFiles.Count)
-            {
-                PlayIntroductionVideo();
-            }
-            else
-            {
-                VideoPlayerGrid.Visibility = Visibility.Collapsed;
-                MessageBox.Show("All videos have been played.");
-            }
-        }
-
-
-        private void VideoPlayer_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            _currentVideoIndex++;
-            if (_currentVideoIndex < _videoFiles.Count)
-            {
-                PlayIntroductionVideo(); // Play the next video
-            }
-            else
-            {
-                VideoPlayerGrid.Visibility = Visibility.Collapsed; // Collapse the video player when all videos have been played
-                DemoIntroducer.Visibility = Visibility.Visible;
-                MessageBox.Show("All videos have been played.");
-            }
-        }
 
         private void LoadAudioFiles()
         {
@@ -281,7 +217,7 @@ namespace VerusSententiaeProject
             Debug.WriteLine("Is this Console writing to line working at all?");
         }
 
-        private void Demo_Introducer_Continue_Click(object sender, RoutedEventArgs e)
+        public void Demo_Introducer_Continue_Click(object sender, RoutedEventArgs e)
         {
             DemoIntroducer.Visibility = Visibility.Collapsed;
             DemoTrialBeginnerGrid.Visibility = Visibility.Visible;
@@ -289,7 +225,7 @@ namespace VerusSententiaeProject
             OutputTrialAudioFiles(); // This will output the contents of trialAudioFiles
         }
 
-        private void Demo_Trial_Beginner_Continue_Button_Click(object sender, RoutedEventArgs e)
+        public void Demo_Trial_Beginner_Continue_Button_Click(object sender, RoutedEventArgs e)
         {
             SoundDisplayedGrid.Visibility = Visibility.Visible;
             DemoTrialBeginnerGrid.Visibility = Visibility.Collapsed;
@@ -309,7 +245,7 @@ namespace VerusSententiaeProject
             mediaPlayer.Play();
         }
 
-        private void LoadValenceImage()
+        public void LoadValenceImage()
         {
             try
             {
@@ -322,7 +258,6 @@ namespace VerusSententiaeProject
 
                 // Load the image and set it to the Image control's Source property.
                 BitmapImage image = new BitmapImage(new Uri(imagePath, UriKind.Absolute));
-                ValenceImage.Source = image; // Make sure you have an Image control with x:Name="ValenceImage" in your XAML.
             }
             catch (Exception ex)
             {

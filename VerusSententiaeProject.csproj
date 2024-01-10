@@ -8,9 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CorrectedValence.png" />
     <None Remove="IAT_Resources\Logo\logo.gif" />
     <None Remove="icons8-european-dragon-48.ico" />
     <None Remove="SAM_Resources\ArousalImage\CorrectedArousal.png" />
+    <None Remove="SAM_Resources\IntroductionVideo\VerusSententiae.mp4" />
     <None Remove="SAM_Resources\ValenceImage\CorrectedValence.png" />
   </ItemGroup>
 
@@ -19,9 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="CorrectedValence.png" />
     <Resource Include="IAT_Resources\Logo\logo.gif" />
     <Resource Include="icons8-european-dragon-48.ico" />
     <Resource Include="SAM_Resources\ArousalImage\CorrectedArousal.png" />
+    <Content Include="SAM_Resources\IntroductionVideo\VerusSententiae.mp4" />
     <Resource Include="SAM_Resources\ValenceImage\CorrectedValence.png" />
   </ItemGroup>
 

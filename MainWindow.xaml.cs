@@ -2,21 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WpfAnimatedGif;
 using System.Windows.Threading;
-using System.Reflection;
-using System.Diagnostics;
+using WpfAnimatedGif;
 
 namespace VerusSententiaeProject
 {
@@ -26,22 +18,14 @@ namespace VerusSententiaeProject
     public partial class MainWindow : Window
     {
         private DispatcherTimer splashTimer = new DispatcherTimer();
-        private IAT _iat;
         private SAM _sam;
         private List<string> _videoFiles;
         private int _currentVideoIndex;
-        private List<string> trialAudioFiles = new List<string>();
-        private List<string> trueTrialAudioFiles = new List<string>();
-        private string CurrentValenceAnswer = string.Empty;
 
         public MainWindow()
         {
-            KeyUp += MainWindow_KeyUp;
-            Loaded += MainWindow_Loaded;
             InitializeComponent();
-            _iat = new IAT();
             _sam = new SAM();
-            AttachIATEventHandlers();
             AttachSAMEventHandlers();
             // Setting the animated GIF for the splash screen
             var image = new BitmapImage();
@@ -49,13 +33,18 @@ namespace VerusSententiaeProject
             image.UriSource = new Uri(@"\IAT_Resources\Logo\logo.gif", UriKind.RelativeOrAbsolute);
             image.EndInit();
             ImageBehavior.SetAnimatedSource(img, image);  // Assuming SplashImage is the name of your Image control in XAML
-
+            _sam.LoadValenceImage();
             LoadSplashScreen();
 
             splashTimer.Interval = TimeSpan.FromSeconds(10);
             splashTimer.Tick += SplashTimer_Tick;
             splashTimer.Start();
-
+            this.Focusable = true;
+            this.Focus();
+            
+            SAM.SamInstructionScreen = this.SamInstructionScreen; // Link to the actual Grid
+            _sam.PlayIntroductionVideoRequested += PlayIntroductionVideo;
+            Loaded += MainWindow_Loaded;
         }
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -70,112 +59,69 @@ namespace VerusSententiaeProject
         private void MainWindow_KeyUp(object sender, KeyEventArgs e)
         {
             Focus();
+            Console.WriteLine("Key pressed");
             MessageBox.Show("Key pressed");
             ValenceRatingGrid.Visibility = Visibility.Collapsed;
             ArousalRatingGrid.Visibility = Visibility.Visible;
+
             if (e.Key >= Key.D1 && e.Key <= Key.D9)
             {
                 MessageBox.Show("A key 1 - 9 was pressed successfully.");
+                Console.WriteLine("A key 1 - 9 was pressed successfully.");
                 ValenceRatingGrid.Visibility = Visibility.Collapsed;
                 ArousalRatingGrid.Visibility = Visibility.Visible;
             }
             else
             {
                 MessageBox.Show(e.Key.ToString(), "Something was pressed!");
+                Console.WriteLine(e.Key.ToString() + " Something was pressed!");
+            }
+        }
+
+        private void PlayIntroductionVideo()
+        {
+            string baseDir = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string projectRootPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(baseDir).FullName).FullName).FullName;
+            string videoFolderPath = System.IO.Path.Combine(projectRootPath, "SAM_Resources", "IntroductionVideo");
+
+            if (!Directory.Exists(videoFolderPath))
+            {
+                MessageBox.Show("Video directory not found.");
+                return;
+            }
+
+            var videoFormats = new[] { "*.mp4", "*.mov" };
+            _videoFiles = videoFormats.SelectMany(format => Directory.EnumerateFiles(videoFolderPath, format)).ToList();
+
+            if (_videoFiles.Count > 0 && _currentVideoIndex < _videoFiles.Count)
+            {
+                string videoPath = _videoFiles[_currentVideoIndex];
+                VideoPlayer.Source = new Uri(videoPath, UriKind.Absolute);
+                VideoPlayer.Play();
+            }
+            else
+            {
+                VideoPlayerGrid.Visibility = Visibility.Collapsed; // Collapse the video player if no videos are found
             }
         }
 
 
-        private void AttachIATEventHandlers()
+        public void VideoPlayer_MediaEnded(object sender, RoutedEventArgs e)
         {
-            _iat.UpdateImage += image => DisplayedImage.Source = image;
-            _iat.UpdateTextBlock += UpdateTextBlockUI;
-            _iat.DisplayImages += UpdateDisplayedImage;
-            _iat.ShowDescription += () => DescriptionTextBlockGrid.Visibility = Visibility.Visible;
-            _iat.HideDescription += () => DescriptionTextBlockGrid.Visibility = Visibility.Collapsed;
-            _iat.ShowDescriptionGrid += ShowDescriptionGridUI;
-            _iat.ShowImageBox += ShowImageBoxUI;
-            _iat.ResetDisplayedImage += ResetDisplayedImageUI;
-            _iat.ShowPlusSymbol += ShowPlusSymbolUI;
-            _iat.TestCompleted += ShowCompletionMessage;
-            _iat.UpdateSpecialImage += UpdateThumbsImageUI;
-            _iat.ShowThumbsImage += ToggleThumbsImageVisibility;
-            _iat.ShowResultTextBlock += ToggleResultTextBlockVisibility;
-            _iat.ShowMainContent += ToggleMainContentVisibility;
-
-        }
-        private void ToggleMainContentVisibility(bool isVisible)
-        {
-            MainContent.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            _currentVideoIndex++;
+            if (_currentVideoIndex < _videoFiles.Count)
+            {
+                PlayIntroductionVideo(); // Play the next video
+            }
+            else
+            {
+                VideoPlayer.Stop();
+                VideoPlayerGrid.Visibility = Visibility.Collapsed; // Collapse the video player when all videos have been played
+                DemoIntroducer.Visibility = Visibility.Visible;
+                MessageBox.Show("All videos have been played.");
+            }
         }
 
-        private void UpdateTextBlockUI(string text)
-        {
-            // Assuming you have a TextBlock control named 'DescriptionTextBlock'
-            DescriptionTextBlock.Text = text;
-        }
-
-        private void UpdateDisplayedImage(ImageSource imageSource)
-        {
-            // Assuming you have an Image control named 'DisplayedImage'
-            DisplayedImage.Source = imageSource;
-
-            // If you have events for showing/hiding other elements like PlusSymbol,
-            // handle them similarly
-            // For example:
-            // PlusSymbol.Visibility = Visibility.Visible or Visibility.Collapsed
-        }
-
-        private void ResetDisplayedImageUI()
-        {
-            DisplayedImage.Source = null; // Assuming DisplayedImage is an Image control in your XAML
-        }
-
-        private void ShowPlusSymbolUI(bool isVisible)
-        {
-            PlusSymbol.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed; // Update as per your UI element
-        }
-
-        private void ShowDescriptionGridUI(bool isVisible)
-        {
-            DescriptionTextBlockGrid.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void ShowImageBoxUI(bool isVisible)
-        {
-            ImageBox.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void ShowCompletionMessage(string message)
-        {
-            MessageBox.Show(message, "Completion", MessageBoxButton.OK, MessageBoxImage.Information);
-            Close(); // Assuming this is meant to close the MainWindow
-        }
-
-        private void ToggleDescriptionGridVisibility(bool isVisible)
-        {
-            DescriptionTextBlockGrid.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void TogglePlusSymbolVisibility(bool isVisible)
-        {
-            PlusSymbol.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void UpdateThumbsImageUI(ImageSource imageSource)
-        {
-            ThumbsImage.Source = imageSource; // Assuming 'ThumbsImage' is an Image control
-        }
-
-        private void ToggleThumbsImageVisibility(bool isVisible)
-        {
-            ThumbsImage.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void ToggleResultTextBlockVisibility(bool isVisible)
-        {
-            ResultTextBlock.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
 
         private void LoadSplashScreen()
         {
@@ -193,19 +139,6 @@ namespace VerusSententiaeProject
 
         }
 
-        private void ContinueButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Example: Call a method on the IAT instance
-            _iat.ContinueButtonClick(); // Assuming you have a method like this in your IAT class
-        }
-
-        private void IAT_Button_Click(object sender, RoutedEventArgs e)
-        {
-            // Start the IAT test
-            _iat.StartIATExam();
-            Exam_Menu.Visibility = Visibility.Collapsed;
-            StartScreen.Visibility = Visibility.Collapsed;
-        }
         private void AttachSAMEventHandlers()
         {
             _sam.UpdateTitle += title => SamTitleTextBlock.Text = title;
@@ -230,6 +163,27 @@ namespace VerusSententiaeProject
             SAMInputFileAnalyze();
 
         }
+
+        private void SAM_Instruction_Button_Continue_Click(object sender, RoutedEventArgs e)
+        {
+            _sam.SAM_Instruction_Button_Continue_Click(sender, e);
+        }
+
+        private void Demo_Introducer_Continue_Click(object sender, RoutedEventArgs e)
+        {
+            _sam.Demo_Introducer_Continue_Click(sender, e);
+        }
+
+        private void Demo_Trial_Beginner_Continue_Button_Click(object sender, RoutedEventArgs e)
+        {
+            _sam.Demo_Trial_Beginner_Continue_Button_Click(sender, e);
+        }
+
+        private void VideoPlayer_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            MessageBox.Show("Media failed: " + e.ErrorException.Message);
+        }
+
         private void SAMInputFileAnalyze()
         {
             // Ensure _sam is instantiated

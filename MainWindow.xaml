@@ -89,7 +89,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="20"/>
                 </Grid.RowDefinitions>
-                <Button x:Name="IAT_Button" Content="IAT Exam" Width="150" Height="60" Click="IAT_Button_Click" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,220,0,0" Cursor="Hand">
+                <Button x:Name="IAT_Button" Content="IAT Exam" Width="150" Height="60"  HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,220,0,0" Cursor="Hand">
                     <Button.Style>
                         <Style TargetType="Button">
                             <!-- Rounded corners -->
@@ -224,7 +224,7 @@
             <StackPanel x:Name="DescriptionTextBlockGrid" Visibility="Collapsed">
                 <!-- Description TextBlock -->
                 <TextBlock x:Name="DescriptionTextBlock" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20,20,20,50" TextWrapping="Wrap"/>
-                <Button x:Name="ContinueButton" Content="Continue" Width="150" Height="60" Click="ContinueButton_Click" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,290,0,20" Cursor="Hand">
+                <Button x:Name="ContinueButton" Content="Continue" Width="150" Height="60"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,290,0,20" Cursor="Hand">
                     <Button.Style>
                         <Style TargetType="Button">
                             <!-- Rounded corners -->
@@ -505,12 +505,15 @@
             </Button>
         </Grid>
         <!-- Video Player Grid -->
-        <Grid x:Name="VideoPlayerGrid" Visibility="Collapsed">
-            <MediaElement x:Name="VideoPlayer"
+        <Grid x:Name="VideoPlayerGrid" Visibility="Collapsed" >
+            <MediaElement x:Name="VideoPlayer" 
                       Width="2080" Height="1080"
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       LoadedBehavior="Manual" UnloadedBehavior="Stop"
-                      MediaEnded="VideoPlayer_MediaEnded"/>
+                      MediaFailed="VideoPlayer_MediaFailed"
+                      MediaEnded="VideoPlayer_MediaEnded"                 
+                      Panel.ZIndex="1"
+                      />
         </Grid>
         <Grid x:Name="DemoTrialBeginnerGrid" Visibility="Collapsed">
             <TextBlock x:Name="DemoTrialTitleBeginner" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Top" />
@@ -582,7 +585,7 @@
                 <Run Text="Please Pay Attention"/>
             </TextBlock>
         </Grid>
-        <Grid x:Name="ValenceRatingGrid" Visibility="Collapsed">
+        <Grid x:Name="ValenceRatingGrid" Visibility="Collapsed" KeyUp="MainWindow_KeyUp">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -603,7 +606,7 @@
 
                 <!-- Image control to display your picture -->
                 <Image x:Name="ValenceImage" 
-                    Source="\SAM_Resources\ValenceImage\CorrectedValence.png"  
+                    Source="/CorrectedValence.png"  
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center"
                     Grid.Row="2"/>
